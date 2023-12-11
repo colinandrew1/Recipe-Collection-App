@@ -1,10 +1,11 @@
 DROP TABLE IF EXISTS ShoppingList;
 DROP TABLE IF EXISTS SimilarRecipes;
-DROP TABLE IF EXISTS DietaryRestriction;
 DROP TABLE IF EXISTS Favorites;
 DROP TABLE IF EXISTS Instructions;
 DROP TABLE IF EXISTS Recipe_Ingredient;
+DROP TABLE IF EXISTS RecipeDietaryRestriction ;
 DROP TABLE IF EXISTS Recipe;
+DROP TABLE IF EXISTS DietaryRestrictionType;
 DROP TABLE IF EXISTS Cuisine;
 DROP TABLE IF EXISTS Category;
 DROP TABLE IF EXISTS Unit;
@@ -34,6 +35,11 @@ CREATE TABLE Cuisine (
     cuisine_name VARCHAR(255)
 );
 
+CREATE TABLE DietaryRestrictionType (
+    restriction_id INT PRIMARY KEY,
+    restriction_name VARCHAR(50) UNIQUE
+);
+
 
 CREATE TABLE Recipe (
     recipe_id INT PRIMARY KEY,
@@ -46,6 +52,14 @@ CREATE TABLE Recipe (
     FOREIGN KEY (cuisine_id) REFERENCES Cuisine(cuisine_id)
 );
 
+
+CREATE TABLE RecipeDietaryRestriction (
+    recipe_id INT,
+    restriction_id INT,
+    PRIMARY KEY (recipe_id, restriction_id),
+    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),
+    FOREIGN KEY (restriction_id) REFERENCES DietaryRestrictionType(restriction_id)
+);
 
 CREATE TABLE Recipe_Ingredient (
     recipe_id INT,
@@ -76,12 +90,6 @@ CREATE TABLE Favorites (
 );
 
 
-CREATE TABLE DietaryRestriction (
-    recipe_id INT,
-    restriction_type VARCHAR(50),
-    PRIMARY KEY (recipe_id, restriction_type),
-    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id)
-);
 
 
 CREATE TABLE SimilarRecipes (
@@ -119,7 +127,15 @@ INSERT INTO Cuisine (cuisine_id, cuisine_name) VALUES
 (6, 'Japanese'),
 (7, 'Thai');
 
-
+INSERT INTO DietaryRestrictionType (restriction_id, restriction_name) VALUES
+(1, 'Vegetarian'),
+(2, 'Vegan'),
+(3, 'Gluten-Free'),
+(4, 'Keto'),
+(5, 'Paleo'),
+(6, 'Pescatarian'),
+(7, 'Lactose-Free'),
+(8, 'Nut-Free');
 
 INSERT INTO Recipe (recipe_id, recipe_name, category_id, cuisine_id, price, prep_time) VALUES
 (1, 'Pancakes', 1, 1, 8, 20),
@@ -518,3 +534,109 @@ INSERT INTO Recipe_Ingredient (recipe_id, ingredient_id, quantity, unit_id) VALU
 (25, 8, 200, 5), -- Chocolate (Gram)
 (25, 3, 2, 3), -- Eggs (Cup)
 (25, 17, 300, 3); -- Strawberries (Cup)
+
+
+-- Pancakes (Vegetarian, Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(1, 1), -- Vegetarian
+(1, 8); -- Nut-Free
+
+-- Spaghetti Bolognese (Gluten-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(2, 7); -- Lactose-Free
+
+-- Chicken Curry (Not Vegan, Lactose-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(3, 7); -- Lactose-Free
+
+-- Chocolate Brownies (Gluten-Free, Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(4, 8); -- Nut-Free
+
+-- Caprese Salad (Vegetarian, Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(5, 1), -- Vegetarian
+(5, 8); -- Nut-Free
+
+-- Sushi Rolls (Vegan)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(6, 2); -- Vegan
+
+-- Omelette (Vegetarian, Lactose-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(7, 1), -- Vegetarian
+(7, 7); -- Lactose-Free
+
+-- Grilled Chicken Caesar Salad (Lactose-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(8, 7); -- Lactose-Free
+
+-- Tomato Basil Pasta (Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(9, 8); -- Nut-Free
+
+-- Chocolate Chip Cookies (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(10, 1); -- Vegetarian
+
+-- Vegetarian Stir-Fry (Vegan)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(11, 2); -- Vegan
+
+-- Mushroom Risotto (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(12, 1); -- Vegetarian
+
+-- Chicken Quesadillas (Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(13, 8); -- Nut-Free
+
+-- Classic Margherita Pizza (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(14, 1); -- Vegetarian
+
+-- Shrimp Scampi (Lactose-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(15, 7); -- Lactose-Free
+
+-- Greek Salad (Vegetarian, Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(16, 1), -- Vegetarian
+(16, 8); -- Nut-Free
+
+-- Beef Tacos (Gluten-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(17, 3); -- Gluten-Free
+
+-- Caramelized Onion and Goat Cheese Tart (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(18, 1); -- Vegetarian
+
+-- Lemon Garlic Roast Chicken (Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(19, 8); -- Nut-Free
+
+-- Vegetable Lasagna (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(20, 1); -- Vegetarian
+
+-- Baked Ziti (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(21, 1); -- Vegetarian
+
+-- Honey Mustard Glazed Salmon (Lactose-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(22, 7); -- Lactose-Free
+
+-- Pesto Pasta with Cherry Tomatoes (Vegan)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(23, 2); -- Vegan
+
+-- Teriyaki Chicken Rice Bowl (Nut-Free)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(24, 8); -- Nut-Free
+
+-- Strawberry Shortcake (Vegetarian)
+INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
+(25, 1); -- Vegetarian
+
