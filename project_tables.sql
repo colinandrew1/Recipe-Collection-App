@@ -48,6 +48,7 @@ CREATE TABLE Recipe (
     cuisine_id INT,
     price INT,
     prep_time INT,
+    rating INT,
     FOREIGN KEY (category_id) REFERENCES Category(category_id),
     FOREIGN KEY (cuisine_id) REFERENCES Cuisine(cuisine_id)
 );
@@ -137,32 +138,33 @@ INSERT INTO DietaryRestrictionType (restriction_id, restriction_name) VALUES
 (7, 'Lactose-Free'),
 (8, 'Nut-Free');
 
-INSERT INTO Recipe (recipe_id, recipe_name, category_id, cuisine_id, price, prep_time) VALUES
-(1, 'Pancakes', 1, 1, 8, 20),
-(2, 'Spaghetti Bolognese', 2, 1, 15, 45),
-(3, 'Chicken Curry', 2, 4, 20, 50),
-(4, 'Chocolate Brownies', 4, 1, 10, 30),
-(5, 'Caprese Salad', 3, 5, 12, 15),
-(6, 'Sushi Rolls', 2, 6, 25, 60),
-(7, 'Omelette', 1, 1, 10, 15),
-(8, 'Grilled Chicken Caesar Salad', 3, 5, 18, 30),
-(9, 'Tomato Basil Pasta', 2, 1, 12, 25),
-(10, 'Chocolate Chip Cookies', 4, 1, 8, 20),
-(11, 'Vegetarian Stir-Fry', 2, 3, 15, 30),
-(12, 'Mushroom Risotto', 2, 1, 20, 40),
-(13, 'Chicken Quesadillas', 2, 2, 15, 35),
-(14, 'Classic Margherita Pizza', 2, 1, 14, 30),
-(15, 'Shrimp Scampi', 2, 1, 22, 35),
-(16, 'Greek Salad', 3, 5, 14, 20),
-(17, 'Beef Tacos', 2, 2, 18, 40),
-(18, 'Caramelized Onion and Goat Cheese Tart', 4, 1, 16, 45),
-(19, 'Lemon Garlic Roast Chicken', 2, 5, 25, 50),
-(20, 'Vegetable Lasagna', 2, 1, 20, 45),
-(21, 'Baked Ziti', 2, 1, 15, 35),
-(22, 'Honey Mustard Glazed Salmon', 2, 5, 20, 30),
-(23, 'Pesto Pasta with Cherry Tomatoes', 2, 1, 15, 25),
-(24, 'Teriyaki Chicken Rice Bowl', 3, 6, 18, 40),
-(25, 'Strawberry Shortcake', 4, 1, 12, 30);
+INSERT INTO Recipe (recipe_id, recipe_name, category_id, cuisine_id, price, prep_time, rating) VALUES
+(1, 'Pancakes', 1, 1, 8, 20, 4),
+(2, 'Spaghetti Bolognese', 2, 1, 15, 45, 5),
+(3, 'Chicken Curry', 2, 4, 20, 50, 3),
+(4, 'Chocolate Brownies', 4, 1, 10, 30, 5),
+(5, 'Caprese Salad', 3, 5, 12, 15, 4),
+(6, 'Sushi Rolls', 2, 6, 25, 60, 3),
+(7, 'Omelette', 1, 1, 10, 15, 4),
+(8, 'Grilled Chicken Caesar Salad', 3, 5, 18, 30, 5),
+(9, 'Tomato Basil Pasta', 2, 1, 12, 25, 2),
+(10, 'Chocolate Chip Cookies', 4, 1, 8, 20, 5),
+(11, 'Vegetarian Stir-Fry', 2, 3, 15, 30, 3),
+(12, 'Mushroom Risotto', 2, 1, 20, 40, 4),
+(13, 'Chicken Quesadillas', 2, 2, 15, 35, 4),
+(14, 'Classic Margherita Pizza', 2, 1, 14, 30, 5),
+(15, 'Shrimp Scampi', 2, 1, 22, 35, 3),
+(16, 'Greek Salad', 3, 5, 14, 20, 4),
+(17, 'Beef Tacos', 2, 2, 18, 40, 5),
+(18, 'Caramelized Onion and Goat Cheese Tart', 4, 1, 16, 45, 3),
+(19, 'Lemon Garlic Roast Chicken', 2, 5, 25, 50, 4),
+(20, 'Vegetable Lasagna', 2, 1, 20, 45, 5),
+(21, 'Baked Ziti', 2, 1, 15, 35, 2),
+(22, 'Honey Mustard Glazed Salmon', 2, 5, 20, 30, 5),
+(23, 'Pesto Pasta with Cherry Tomatoes', 2, 1, 15, 25, 4),
+(24, 'Teriyaki Chicken Rice Bowl', 3, 6, 18, 40, 3),
+(25, 'Strawberry Shortcake', 4, 1, 12, 30, 5);
+
 
 
 INSERT INTO Instructions (recipe_id, step_number, instruction_text) VALUES
