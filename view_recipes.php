@@ -51,7 +51,7 @@
             die("Connection failed: " . mysqli_connect_error());
         }
 
-        $q = "SELECT * FROM Recipe";
+        $q = "SELECT * FROM Recipe ORDER BY rating DESC, recipe_name ASC";
         $rs = mysqli_query($cn, $q); 
 
         if (mysqli_num_rows($rs) > 0) {
@@ -60,7 +60,7 @@
             while($row = mysqli_fetch_assoc($rs)) {
                 echo "<form action='recipe_details.php' method='post'>";
                 echo "<button type='submit' name='recipe_id' value='{$row["recipe_id"]}'>";
-                echo  $row["recipe_name"];
+                echo  $row["recipe_name"] . "....." . $row["rating"] . "/5";
                 echo "</button>";
                 echo "</form>";
             }

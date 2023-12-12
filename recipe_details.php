@@ -19,6 +19,8 @@
             border: 2px solid #336699;
             border-radius: 10px;
             padding: 20px;
+            overflow: auto;
+            max-height: 80vh;
             max-width: 600px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

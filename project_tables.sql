@@ -14,31 +14,31 @@ DROP TABLE IF EXISTS Ingredient;
 
 CREATE TABLE Ingredient (
     ingredient_id INT PRIMARY KEY,
-    ingredient_name VARCHAR(255)
+    ingredient_name VARCHAR(255) NOT NULL UNIQUE
 );
 
 
 CREATE TABLE Unit (
     unit_id INT PRIMARY KEY,
-    unit_name VARCHAR(50) NOT NULL
+    unit_name VARCHAR(50) NOT NULL UNIQUE
 );
 
 
 CREATE TABLE Category (
     category_id INT PRIMARY KEY,
-    category_name VARCHAR(255)
+    category_name VARCHAR(255) NOT NULL UNIQUE
 );
 
 
 CREATE TABLE Cuisine (
     cuisine_id INT PRIMARY KEY,
-    cuisine_name VARCHAR(255)
+    cuisine_name VARCHAR(255) NOT NULL UNIQUE
 );
 
 
 CREATE TABLE DietaryRestrictionType (
     restriction_id INT PRIMARY KEY,
-    restriction_name VARCHAR(50) UNIQUE
+    restriction_name VARCHAR(50) NOT NULL UNIQUE
 );
 
 
@@ -93,7 +93,6 @@ CREATE TABLE Favorites (
 
 
 
-
 CREATE TABLE SimilarRecipes (
     recipe_id INT,
     similar_recipe_id INT,
@@ -114,8 +113,8 @@ CREATE TABLE ShoppingList (
 
 INSERT INTO Category (category_id, category_name) VALUES
 (1, 'Breakfast'),
-(2, 'Dinner'),
 (3, 'Lunch'),
+(2, 'Dinner'),
 (4, 'Dessert'),
 (5, 'Snack');
 
@@ -127,7 +126,21 @@ INSERT INTO Cuisine (cuisine_id, cuisine_name) VALUES
 (4, 'Indian'),
 (5, 'Mediterranean'),
 (6, 'Japanese'),
-(7, 'Thai');
+(7, 'Thai'),
+(9, 'French'),
+(10, 'Greek'),
+(11, 'Spanish'),
+(12, 'American'),
+(13, 'Brazilian'),
+(14, 'Korean'),
+(15, 'Vietnamese'),
+(16, 'Lebanese'),
+(17, 'Turkish'),
+(18, 'Moroccan'),
+(19, 'African'),
+(8, 'Caribbean'),
+(20, 'N/A');
+
 
 INSERT INTO DietaryRestrictionType (restriction_id, restriction_name) VALUES
 (1, 'Vegetarian'),
@@ -137,7 +150,8 @@ INSERT INTO DietaryRestrictionType (restriction_id, restriction_name) VALUES
 (5, 'Paleo'),
 (6, 'Pescatarian'),
 (7, 'Lactose-Free'),
-(8, 'Nut-Free');
+(8, 'Nut-Free'),
+(9, 'N/A');
 
 INSERT INTO Recipe (recipe_id, recipe_name, category_id, cuisine_id, price, prep_time, rating) VALUES
 (1, 'Pancakes', 1, 1, 8, 20, 4),

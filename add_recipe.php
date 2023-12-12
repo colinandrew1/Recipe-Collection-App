@@ -1,3 +1,129 @@
+<?php
+    $config = parse_ini_file("config.ini");
+    $server = $config["host"];
+    $username = $config["user"];
+    $password = $config["password"];
+    $database = $config["database"];
+    $cn = mysqli_connect($server, $username, $password, $database);
+
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        $recipeName = $_POST['recipe_name'];
+        $categoryName = $_POST['category'];
+        $cuisineName = $_POST['cuisine'];
+        $cost = $_POST['cost'];
+        $prepTime = $_POST['prep_time'];
+        $rating = $_POST['rating'];
+        $dietaryRestrictionName = $_POST['dietary_restrictions'];
+        $recipeIngredients = $_POST['selected_ingredients'];
+        $recipeSteps = $_POST['display_steps'];
+
+
+        $q = "SELECT MAX(recipe_id) FROM Recipe";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->execute();
+        $st->bind_result($max_recipe_id);
+        $st->fetch();
+        $st->close();
+        $recipe_id = $max_recipe_id + 1;
+
+        $q = "SELECT category_id FROM Category WHERE category_name = ?";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->bind_param("s", $categoryName);
+        $st->execute();
+        $st->bind_result($category_id);
+        $st->fetch();
+        $st->close();
+
+        $q = "SELECT cuisine_id FROM Cuisine WHERE cuisine_name = ?";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->bind_param("s", $cuisineName);
+        $st->execute();
+        $st->bind_result($cuisine_id);
+        $st->fetch();
+        $st->close();
+        
+
+        $q = "SELECT restriction_id FROM DietaryRestrictionType WHERE restriction_name = ?";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->bind_param("s", $dietaryRestrictionName);
+        $st->execute();
+        $st->bind_result($restriction_id);
+        $st->fetch();
+        $st->close();
+
+        $q = "INSERT INTO Recipe (recipe_id, recipe_name, category_id, cuisine_id, price, prep_time, rating) VALUES (?,?,?,?,?,?,?)";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->bind_param("isiiiii", $recipe_id, $recipeName, $category_id, $cuisine_id, $cost, $prepTime, $rating);
+        $st->execute();
+        $st->close();
+
+        $q = "INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES (?,?)";
+        $st = $cn->stmt_init();
+        $st->prepare($q);
+        $st->bind_param("ii", $recipe_id, $restriction_id);
+        $st->execute();
+        $st->close();
+
+        $ingredientStrings = explode("\n", $recipeIngredients);
+        foreach ($ingredientStrings as $ingredientString) {
+            $parts = explode(' ', trim($ingredientString), 3);
+
+            $number = '';
+            $unit = '';
+            $ingredient = '';
+
+            if (isset($parts[0])) {
+                $number = $parts[0];
+            }
+            if (isset($parts[1])) {
+                $unit = $parts[1];
+            }
+            if (isset($parts[2])) {
+                $ingredient = $parts[2];
+            }
+
+            $q = "SELECT ingredient_id FROM Ingredient WHERE ingredient_name = ?";
+            $st = $cn->stmt_init();
+            $st->prepare($q);
+            $st->bind_param("s", $ingredient);
+            $st->execute();
+            $st->bind_result($ingredient_id);
+            $st->fetch();
+            $st->close();
+
+            $q = "SELECT unit_id FROM Unit WHERE unit_name = ?";
+            $st = $cn->stmt_init();
+            $st->prepare($q);
+            $st->bind_param("s", $unit);
+            $st->execute();
+            $st->bind_result($unit_id);
+            $st->fetch();
+            $st->close();
+            
+            $q = "INSERT INTO Recipe_Ingredient (recipe_id, ingredient_id, quantity, unit_id) VALUES (?,?,?,?)";
+            $st = $cn->stmt_init();
+            $st->prepare($q);
+            $st->bind_param("iiii", $recipe_id, $ingredient_id, $number, $unit_id);
+            $st->execute();
+            $st->close();
+
+        }
+
+
+
+        header("Location: recipe_collection_app.php");
+        exit();
+    }
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +168,6 @@
             margin-top: 10px;
         }
 
-        /* Additional styles for the Add Recipe form */
         form {
             margin-top: 20px;
         }
@@ -65,119 +190,143 @@
     <div class="add-recipe">
         <h1>Add Recipe</h1>
 
-        <form action="process_recipe.php" method="post">
+        <form method="post">
 
-            <!-- Recipe Information Section -->
+            <div class="form-group">
+                <label for="recipe_name">Recipe Name:</label>
+                <input type="text" name="recipe_name" id="recipe_name" required>
+            </div>
+
             <div class="form-group">
                 <h2>Recipe Information</h2>
 
-                <!-- Category -->
                 <label for="category">Category:</label>
                 <select name="category" id="category" required>
-                    <option value="">Select Category</option>
-                    <option value="appetizer">Appetizer</option>
-                    <option value="main_course">Main Course</option>
-                    <option value="dessert">Dessert</option>
-                    <!-- Add more categories as needed -->
+                    <?php
+                    $q = "SELECT category_name FROM Category";
+                    $st = $cn->stmt_init();
+                    $st->prepare($q);
+                    $st->execute();
+                    $st->bind_result($category_name);
+
+                    while($st->fetch()){
+                        echo "<option value='" . $category_name . "'>" . $category_name . "</option>";
+                    }
+                    $st->close();
+                    ?>
                 </select>
             </div>
 
             <div class="form-group">
-                <!-- Cuisine -->
                 <label for="cuisine">Cuisine:</label>
                 <select name="cuisine" id="cuisine" required>
-                    <option value="">Select Cuisine</option>
-                    <option value="italian">Italian</option>
-                    <option value="mexican">Mexican</option>
-                    <option value="asian">Asian</option>
-                    <!-- Add more cuisines as needed -->
+                <?php
+                    $q = "SELECT cuisine_name FROM Cuisine";
+                    $st = $cn->stmt_init();
+                    $st->prepare($q);
+                    $st->execute();
+                    $st->bind_result($cuisine_name);
+
+                    while($st->fetch()){
+                        echo "<option value='" . $cuisine_name . "'>" . $cuisine_name . "</option>";
+                    }
+                    $st->close();
+                    ?>
                 </select>
             </div>
 
             <div class="form-group">
-                <!-- Cost to make -->
                 <label for="cost">Cost to make:</label>
                 <input type="number" name="cost" id="cost" min="0" max="999" required>
             </div>
 
             <div class="form-group">
-                <!-- Prep Time -->
                 <label for="prep_time">Prep Time:</label>
                 <input type="number" name="prep_time" id="prep_time" min="0" max="999" required>
             </div>
 
             <div class="form-group">
-                <!-- Rating -->
                 <label for="rating">Rating (0-5):</label>
                 <input type="number" name="rating" id="rating" min="0" max="5" required>
             </div>
 
             <div class="form-group">
-                <!-- Dietary Restrictions -->
                 <label for="dietary_restrictions">Dietary Restrictions:</label>
-                <select name="dietary_restrictions" id="dietary_restrictions">
-                    <option value="">Select Dietary Restrictions</option>
-                    <option value="vegetarian">Vegetarian</option>
-                    <option value="vegan">Vegan</option>
-                    <option value="gluten_free">Gluten-Free</option>
-                    <!-- Add more dietary restrictions as needed -->
+                <select name="dietary_restrictions" id="dietary_restrictions" required>
+                <?php
+                    $q = "SELECT restriction_name FROM DietaryRestrictionType ORDER BY restriction_id";
+                    $st = $cn->stmt_init();
+                    $st->prepare($q);
+                    $st->execute();
+                    $st->bind_result($restriction_name);
+
+                    while($st->fetch()){
+                        echo "<option value='" . $restriction_name . "'>" . $restriction_name . "</option>";
+                    }
+                    $st->close();
+                ?>
                 </select>
             </div>
 
-            <!-- Ingredient Section -->
             <div class="form-group">
                 <h2>Ingredients</h2>
 
-                <!-- Ingredient Name -->
                 <label for="ingredient_name">Ingredient Name:</label>
-                <select name="ingredient_name" id="ingredient_name" required>
-                    <option value="">Select Ingredient</option>
-                    <option value="ingredient1">Ingredient 1</option>
-                    <option value="ingredient2">Ingredient 2</option>
-                    <option value="ingredient3">Ingredient 3</option>
+                <select name="ingredient_name" id="ingredient_name">
+                <?php
+                    $q = "SELECT ingredient_name FROM Ingredient ORDER BY ingredient_name";
+                    $st = $cn->stmt_init();
+                    $st->prepare($q);
+                    $st->execute();
+                    $st->bind_result($ingredient_name);
+
+                    while($st->fetch()){
+                        echo "<option value='" . $ingredient_name . "'>" . $ingredient_name . "</option>";
+                    }
+                    $st->close();
+                ?>
                 </select>
 
-                <!-- Quantity -->
                 <label for="quantity">Quantity:</label>
-                <input type="number" name="quantity" id="quantity" min="0" max="999" required>
+                <input type="number" name="quantity" id="quantity" min="0" max="999">
 
-                <!-- Unit -->
                 <label for="unit">Unit:</label>
-                <select name="unit" id="unit" required>
-                    <option value="">Select Unit</option>
-                    <option value="grams">Grams</option>
-                    <option value="cups">Cups</option>
-                    <option value="pieces">Pieces</option>
+                <select name="unit" id="unit">
+                <?php
+                    $q = "SELECT unit_name FROM Unit";
+                    $st = $cn->stmt_init();
+                    $st->prepare($q);
+                    $st->execute();
+                    $st->bind_result($unit_name);
+
+                    while($st->fetch()){
+                        echo "<option value='" . $unit_name . "'>" . $unit_name . "</option>";
+                    }
+                    $st->close();
+                ?>
                 </select>
 
-                <!-- Button to Add Ingredient -->
                 <button type="button" onclick="addIngredient()">Add Ingredient</button>
 
-                <!-- Selected Ingredients -->
                 <label for="selected_ingredients">Selected Ingredients:</label>
                 <textarea name="selected_ingredients" id="selected_ingredients" rows="4" cols="40" readonly></textarea>
             </div>
 
-            <!-- Instructions Section -->
             <div class="form-group">
                 <h2>Instructions</h2>
 
-                <!-- Step Tracker -->
                 <div id="step_tracker">Step: 1</div>
 
-                <!-- Instruction Textbox -->
                 <input type="text" name="instruction" id="instruction">
                 <button type="button" onclick="addStep()">Add Step</button>
             </div>
 
             <div class="form-group">
-                <!-- Display Steps -->
                 <textarea name="display_steps" id="display_steps" rows="6" cols="40" readonly></textarea>
             </div>
 
-            <!-- Submit Button -->
             <div class="form-group">
-                <input type="submit" value="Submit Recipe">
+                <input type="submit" value="Add Recipe" onsubmit="createRecipe()">
             </div>
 
         </form>
@@ -206,8 +355,6 @@
 
               if (selectedIngredient && selectedQuantity && selectedUnit) {
                   selectedIngredientsTextarea.value += `${selectedQuantity} ${selectedUnit} ${selectedIngredient}\n`;
-
-                  // Clear the form fields
                   ingredientSelect.value = '';
                   quantitySelect.value = '';
                   unitSelect.value = '';
