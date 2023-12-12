@@ -43,6 +43,7 @@
         <a href="add_recipe.php" class="menu-button">Add Recipes</a>
         <a href="analytics.php" class="menu-button">Analytics</a>
         <a href="manage_ingredients.php" class="menu-button">Manage Ingredients</a>
+        <a href="shopping_list.php" class="menu-button">Shopping list</a>
     </div>
 </body>
 </html>

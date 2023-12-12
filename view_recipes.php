@@ -14,11 +14,25 @@
 
         .recipe-list {
             text-align: center;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .recipe-list p {
+        .recipe-list button {
             font-size: 18px;
             margin: 10px 0;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .recipe-list button:hover {
+            background-color: #45a049;
         }
     </style>
     <title>Recipe List</title>
@@ -48,10 +62,12 @@
         if (mysqli_num_rows($rs) > 0) {
             echo "<div class='recipe-list'>";
             echo "<p><em>Current Recipes</em></p>\n";
-            while($row = mysqli_fetch_assoc($rs)) {  // fetch as associative array
-                echo "<p>";
+            while($row = mysqli_fetch_assoc($rs)) {
+                echo "<form action='recipe_details.php' method='post'>";
+                echo "<button type='submit' name='recipe_id' value='{$row["recipe_id"]}'>";
                 echo  $row["recipe_name"];
-                echo "</p>";
+                echo "</button>";
+                echo "</form>";
             }
             echo "</div>";
         }

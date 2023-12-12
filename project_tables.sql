@@ -35,6 +35,7 @@ CREATE TABLE Cuisine (
     cuisine_name VARCHAR(255)
 );
 
+
 CREATE TABLE DietaryRestrictionType (
     restriction_id INT PRIMARY KEY,
     restriction_name VARCHAR(50) UNIQUE
