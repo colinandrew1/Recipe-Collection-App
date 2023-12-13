@@ -51,7 +51,7 @@
             die("Connection failed: " . mysqli_connect_error());
         }
 
-        $q = "SELECT * FROM Recipe ORDER BY rating DESC, recipe_name ASC";
+        $q = "SELECT recipe_id, recipe_name, rating FROM Recipe ORDER BY rating DESC, recipe_name ASC";
         $rs = mysqli_query($cn, $q); 
 
         if (mysqli_num_rows($rs) > 0) {

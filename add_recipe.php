@@ -136,11 +136,7 @@
                 $st->close();
 
             }
-
         }
-
-
-
         header("Location: recipe_collection_app.php");
         exit();
     }
