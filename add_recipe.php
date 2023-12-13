@@ -72,9 +72,11 @@
         $st->close();
 
         $ingredientStrings = explode("\n", $recipeIngredients);
-        foreach ($ingredientStrings as $ingredientString) {
-            $parts = explode(' ', trim($ingredientString), 3);
+        $ingredientStringsLength = count($ingredientStrings);
 
+        for ($i = 0; $i < $ingredientStringsLength - 1; $i++) {
+            $parts = explode(' ', trim($ingredientStrings[$i]), 3);
+            
             $number = '';
             $unit = '';
             $ingredient = '';
@@ -113,6 +115,27 @@
             $st->bind_param("iiii", $recipe_id, $ingredient_id, $number, $unit_id);
             $st->execute();
             $st->close();
+
+        }
+
+        $instructionStrings = explode("\n", $recipeSteps);
+        $instructionStringsLength = count($instructionStrings);
+
+        for ($i = 0; $i < $instructionStringsLength - 1; $i++) {
+            $colonPosition = strpos($instructionStrings[$i], ':');
+
+            if ($colonPosition !== false) {
+                $stepNumber = trim(substr($instructionStrings[$i], 5, $colonPosition - 5)); // "Step " has 5 characters
+                $instruction = trim(substr($instructionStrings[$i], $colonPosition + 1));
+
+                $q = "INSERT INTO Instructions (recipe_id, step_number, instruction_text) VALUES (?,?,?)";
+                $st = $cn->stmt_init();
+                $st->prepare($q);
+                $st->bind_param("iis", $recipe_id, $stepNumber, $instruction);
+                $st->execute();
+                $st->close();
+
+            }
 
         }
 
