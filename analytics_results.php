@@ -42,15 +42,7 @@
             margin-top: 10px;
         }
 
-        .update-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
 
-        .delete-button {
-            left: 10px;
-        }
     </style>
     <title>Recipe Details</title>
 </head>
@@ -199,20 +191,6 @@
             while ($st->fetch()) {
                 echo "<div style='text-align: left;'>Step " . $step_number . ") " . $instruction_text . "</div><br>";
             }
-            echo "</div>";
-
-            echo "<div class='update-button'>";
-            echo "<form action='update_recipe_frontend.php' method='post'>";
-            echo "<button type='submit'>Update</button>";
-            echo "<input type='hidden' name='recipe_id' value='" . $recipe_id . "'>";
-            echo "</form>";
-            echo "</div>";
-
-            echo "<div class='delete-button'>";
-            echo "<form action='delete_recipe.php' method='post'>";
-            echo "<button type='submit'>Delete</button>";
-            echo "<input type='hidden' name='recipe_id' value='" . $recipe_id . "'>";
-            echo "</form>";
             echo "</div>";
 
             $cn->close();

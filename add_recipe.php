@@ -221,6 +221,7 @@
 
                 <label for="category">Category:</label>
                 <select name="category" id="category" required>
+                <option value=""></option>
                     <?php
                     $q = "SELECT category_name FROM Category";
                     $st = $cn->stmt_init();
@@ -239,6 +240,7 @@
             <div class="form-group">
                 <label for="cuisine">Cuisine:</label>
                 <select name="cuisine" id="cuisine" required>
+                <option value=""></option>
                 <?php
                     $q = "SELECT cuisine_name FROM Cuisine";
                     $st = $cn->stmt_init();
@@ -272,6 +274,7 @@
             <div class="form-group">
                 <label for="dietary_restrictions">Dietary Restrictions:</label>
                 <select name="dietary_restrictions" id="dietary_restrictions" required>
+                <option value=""></option>
                 <?php
                     $q = "SELECT restriction_name FROM DietaryRestrictionType ORDER BY restriction_id";
                     $st = $cn->stmt_init();
@@ -292,6 +295,7 @@
 
                 <label for="ingredient_name">Ingredient Name:</label>
                 <select name="ingredient_name" id="ingredient_name">
+                <option value=""></option>
                 <?php
                     $q = "SELECT ingredient_name FROM Ingredient ORDER BY ingredient_name";
                     $st = $cn->stmt_init();
@@ -311,6 +315,7 @@
 
                 <label for="unit">Unit:</label>
                 <select name="unit" id="unit">
+                <option value=""></option>
                 <?php
                     $q = "SELECT unit_name FROM Unit";
                     $st = $cn->stmt_init();
