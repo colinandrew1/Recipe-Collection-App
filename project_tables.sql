@@ -44,7 +44,7 @@ CREATE TABLE DietaryRestrictionType (
 
 CREATE TABLE Recipe (
     recipe_id INT PRIMARY KEY,
-    recipe_name VARCHAR(255),
+    recipe_name VARCHAR(255) NOT NULL,
     category_id INT,
     cuisine_id INT,
     price INT,
@@ -555,8 +555,7 @@ INSERT INTO Recipe_Ingredient (recipe_id, ingredient_id, quantity, unit_id) VALU
 
 -- Pancakes (Vegetarian, Nut-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
-(1, 1), -- Vegetarian
-(1, 8); -- Nut-Free
+(1, 1); -- Vegetarian
 
 -- Spaghetti Bolognese (Gluten-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
@@ -572,8 +571,7 @@ INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
 
 -- Caprese Salad (Vegetarian, Nut-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
-(5, 1), -- Vegetarian
-(5, 8); -- Nut-Free
+(5, 1); -- Vegetarian
 
 -- Sushi Rolls (Vegan)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
@@ -581,8 +579,7 @@ INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
 
 -- Omelette (Vegetarian, Lactose-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
-(7, 1), -- Vegetarian
-(7, 7); -- Lactose-Free
+(7, 1); -- Vegetarian
 
 -- Grilled Chicken Caesar Salad (Lactose-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
@@ -618,8 +615,7 @@ INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
 
 -- Greek Salad (Vegetarian, Nut-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES
-(16, 1), -- Vegetarian
-(16, 8); -- Nut-Free
+(16, 1); -- Vegetarian
 
 -- Beef Tacos (Gluten-Free)
 INSERT INTO RecipeDietaryRestriction (recipe_id, restriction_id) VALUES

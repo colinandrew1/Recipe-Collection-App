@@ -80,6 +80,7 @@
 
                 <label for="category">Category:</label>
                 <select name="category" id="category">
+                  <option value=""></option>
                     <?php
                     $q = "SELECT category_name FROM Category";
                     $st = $cn->stmt_init();
@@ -98,6 +99,7 @@
             <div class="form-group">
                 <label for="cuisine">Cuisine:</label>
                 <select name="cuisine" id="cuisine">
+                  <option value=""></option>
                 <?php
                     $q = "SELECT cuisine_name FROM Cuisine";
                     $st = $cn->stmt_init();
@@ -148,6 +150,7 @@
             <div class="form-group">
                 <label for="dietary_restrictions">Dietary Restrictions:</label>
                 <select name="dietary_restrictions" id="dietary_restrictions">
+                <option value=""></option>
                 <?php
                     $q = "SELECT restriction_name FROM DietaryRestrictionType ORDER BY restriction_id";
                     $st = $cn->stmt_init();
@@ -163,31 +166,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <h2>Ingredients</h2>
-
-                <label for="ingredient_name">Ingredient Name:</label>
-                <select name="ingredient_name" id="ingredient_name">
-                <?php
-                    $q = "SELECT ingredient_name FROM Ingredient ORDER BY ingredient_name";
-                    $st = $cn->stmt_init();
-                    $st->prepare($q);
-                    $st->execute();
-                    $st->bind_result($ingredient_name);
-
-                    while($st->fetch()){
-                        echo "<option value='" . $ingredient_name . "'>" . $ingredient_name . "</option>";
-                    }
-                    $st->close();
-                ?>
-                </select>
-
-
-                <button type="button" onclick="addIngredient()">Add Ingredient</button>
-
-                <label for="selected_ingredients">Selected Ingredients:</label>
-                <textarea name="selected_ingredients" id="selected_ingredients" rows="4" cols="40" readonly></textarea>
-            </div>
+            
 
 
             <div class="form-group">
@@ -195,19 +174,7 @@
             </div>
 
         </form>
-        <script>
-          function addIngredient() {
-              const ingredientSelect = document.getElementById('ingredient_name');
-              const selectedIngredientsTextarea = document.getElementById('selected_ingredients');
-              const selectedIngredient = ingredientSelect.value;
-
-              if (selectedIngredient) {
-                  selectedIngredientsTextarea.value += `${selectedIngredient}\n`;
-                  ingredientSelect.value = '';
-
-              }
-          }
-        </script>  
+        
     </div>
 </body>
 </html>

@@ -24,6 +24,7 @@
             max-width: 600px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Ensure relative positioning for absolute positioning inside */
         }
 
         h1, h2 {
@@ -40,14 +41,20 @@
         .section-content {
             margin-top: 10px;
         }
+
+        .update-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
     <title>Recipe Details</title>
 </head>
 <body>
     <div class="recipe-details">
         <?php
-            // connection params
-            $config = parse_ini_file("config.ini");   // better to hide this!
+
+            $config = parse_ini_file("config.ini");
             $server = $config["host"];
             $username = $config["user"];
             $password = $config["password"];
@@ -190,10 +197,15 @@
             }
             echo "</div>";
 
-            $st->close();
+            echo "<div class='update-button'>";
+            echo "<form action='update_recipe_frontend.php' method='post'>";
+            echo "<button type='submit'>Update</button>";
+            echo "<input type='hidden' name='recipe_id' value='" . $recipe_id . "'>";
+            echo "</form>";
+            echo "</div>";
+
             $cn->close();
         ?>
     </div>
 </body>
 </html>
-
