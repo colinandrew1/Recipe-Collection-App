@@ -68,9 +68,26 @@
             $dietary_restrictions_name = $_POST["dietary_restrictions"];
             $function = $_POST["function"];
             $attribute = $_POST["attribute"];
+            $group = $_POST["group"];
+
+            if (empty($attribute)) {
+                $attribute = "*";
+            }
+
+            if (!empty($group)) {
+                $q = "SELECT " . $group . "_name, $function($attribute) FROM Recipe JOIN Category USING (category_id) JOIN Cuisine USING (cuisine_id) WHERE 1=1";
+            }
+            else {
+                $q = "SELECT $function($attribute) FROM Recipe JOIN RecipeDietaryRestriction USING (recipe_id) WHERE 1=1";
+            }
+
+            // SELECT cuisine_name, function(attribute) as aggregate
+            // FROM same
+            // WHERE same
+            // GROUP BY group
+            // ORDER BY function(attribute)
 
 
-            $q = "SELECT $function($attribute) FROM Recipe JOIN RecipeDietaryRestriction USING (recipe_id) WHERE 1=1";
             $params = "";
             $param_values = [];
 
@@ -146,6 +163,11 @@
 
             $q .= " AND 2=2";
 
+            if (!empty($group)) {
+                $q .= " GROUP BY " . $group . "_id ORDER BY " . $function . "(" . $attribute . ") DESC";
+
+            }
+            
             $st = $cn->stmt_init();
             $st->prepare($q);
 
@@ -158,32 +180,36 @@
                 call_user_func_array([$st, 'bind_param'], $refs);
             }
 
-            // var_dump($q);
-            // var_dump($category_id);
-
-
             $st->execute();
-            $st->bind_result($result_value);
-            $st->fetch();
-
-
-            if (!is_null($result_value)) {
-                echo "<h2>Result:</h2>";
-            
-                if ($attribute == "price") {
-                    echo "<p><h4>$ {$result_value}</h4></p>";
-                } elseif ($attribute == "prep_time") {
-                    echo "<p><h4>{$result_value} minutes</h4></p>";
-                } elseif ($attribute == "rating") {
-                    echo "<p><h4>{$result_value} / 5</h4></p>";
-                } else {
-                    echo "<p><h4>{$result_value}</h4></p>";
+            if (!empty($group)) 
+            {
+                $st->bind_result($group_title, $group_value);
+                while ($st->fetch()) {
+                    echo "<p><strong>$group_title:</strong> $group_value</p>";
                 }
             }
-            else {
-                echo "<h2>No results available, please edit search criteria.</h2>";
+            else
+            {
+                $st->bind_result($result_value);
+                $st->fetch();
+                if (!is_null($result_value)) {
+                    echo "<h2>Result:</h2>";
+                
+                    if ($attribute == "price") {
+                        echo "<p><h4>$ {$result_value}</h4></p>";
+                    } elseif ($attribute == "prep_time") {
+                        echo "<p><h4>{$result_value} minutes</h4></p>";
+                    } elseif ($attribute == "rating") {
+                        echo "<p><h4>{$result_value} / 5</h4></p>";
+                    } else {
+                        echo "<p><h4>{$result_value}</h4></p>";
+                    }
+                }
+                else {
+                    echo "<h2>No results available, please edit search criteria.</h2>";
+                }
             }
-
+            
             $st->close();
             mysqli_close($cn);
         ?>

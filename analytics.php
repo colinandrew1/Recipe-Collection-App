@@ -89,11 +89,18 @@
           </select>
 
           <label for="attribute">Attribute:</label>
-          <select name="attribute" id="attribute" required>
+          <select name="attribute" id="attribute">
             <option value=""></option>
             <option value="price">Price</option>
             <option value="prep_time">Prep Time</option>
             <option value="rating">Rating</option>
+          </select>
+
+          <label for="group">Group By:</label>
+          <select name="group" id="group">
+            <option value=""></option>
+            <option value="cuisine">Cuisine</option>
+            <option value="category">Category</option>
           </select>
       </div>
 
