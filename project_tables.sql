@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS ShoppingList;
-DROP TABLE IF EXISTS SimilarRecipes;
-DROP TABLE IF EXISTS Favorites;
 DROP TABLE IF EXISTS Instructions;
 DROP TABLE IF EXISTS Recipe_Ingredient;
 DROP TABLE IF EXISTS RecipeDietaryRestriction ;
