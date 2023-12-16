@@ -85,30 +85,6 @@ CREATE TABLE Instructions (
 );
 
 
-CREATE TABLE Favorites (
-    recipe_id INT,
-    PRIMARY KEY (recipe_id),
-    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id)
-);
-
-
-
-CREATE TABLE SimilarRecipes (
-    recipe_id INT,
-    similar_recipe_id INT,
-    PRIMARY KEY (recipe_id, similar_recipe_id),
-    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),
-    FOREIGN KEY (similar_recipe_id) REFERENCES Recipe(recipe_id)
-);
-
-
-CREATE TABLE ShoppingList (
-    recipe_id INT,
-    ingredient_id INT,
-    PRIMARY KEY (recipe_id, ingredient_id),
-    FOREIGN KEY (recipe_id) REFERENCES Recipe(recipe_id),
-    FOREIGN KEY (ingredient_id) REFERENCES Ingredient(ingredient_id)
-);
 
 
 INSERT INTO Category (category_id, category_name) VALUES
