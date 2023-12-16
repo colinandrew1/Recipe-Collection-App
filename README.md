@@ -6,3 +6,7 @@ Getting Started:
 2. Connect to Gonzaga CS server via on-campus wifi or VPN
 3. Start local PHP server
 4. Navigate to http://localhost:8000/recipe_collection_app.php
+
+Video Presentation & Demo:
+https://youtu.be/sTou6Yv6-HA
+
