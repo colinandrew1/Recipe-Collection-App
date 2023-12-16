@@ -44,12 +44,11 @@
 
 
     </style>
-    <title>Recipe Details</title>
+    <title>Results</title>
 </head>
 <body>
     <div class="recipe-details">
         <?php
-
             $config = parse_ini_file("config.ini");
             $server = $config["host"];
             $username = $config["user"];
@@ -58,142 +57,135 @@
 
             $cn = mysqli_connect($server, $username, $password, $database);
 
-            $recipe_id = $_POST["recipe_id"];
+            $category_name = $_POST["category"];
+            $cuisine_name = $_POST["cuisine"];
+            $min_cost = $_POST["min_cost"];
+            $max_cost = $_POST["max_cost"];
+            $min_prep_time = $_POST["min_prep_time"];
+            $max_prep_time = $_POST["max_prep_time"];
+            $min_rating = $_POST["min_rating"];
+            $max_rating = $_POST["max_rating"];
+            $dietary_restrictions_name = $_POST["dietary_restrictions"];
+            $function = $_POST["function"];
+            $attribute = $_POST["attribute"];
 
-            $q = "SELECT recipe_name, category_id, cuisine_id, price, prep_time, rating FROM Recipe WHERE recipe_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $recipe_id);
-            $st->execute();
-            $st->bind_result($recipe_name, $category_id, $cuisine_id, $price, $prep_time, $rating);
-            $st->fetch();
-            $st->close();
 
-            echo "<h1>" . $recipe_name . "</h1>";
+            $q = "SELECT $function($attribute) FROM Recipe JOIN RecipeDietaryRestriction USING (recipe_id) WHERE 1=1";
+            $params = "";
+            $param_values = [];
 
-            $q = "SELECT category_name FROM Category WHERE category_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $category_id);
-            $st->execute();
-            $st->bind_result($category_name);
-            $st->fetch();
-            $st->close();
-
-            $q = "SELECT cuisine_name FROM Cuisine WHERE cuisine_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $cuisine_id);
-            $st->execute();
-            $st->bind_result($cuisine_name);
-            $st->fetch();
-            $st->close();
-
-            echo "<div class='section-heading'>Recipe Details</div>";
-            echo "<div class='section-content'>";
-            echo "Category: " . $category_name . "<br>" . "Cuisine: " . $cuisine_name . "<br>" . "Cost to make: $" . $price .  "<br>" . "Prep time: " . $prep_time . " minutes" . "<br>" . "Rating: " . $rating . "/5" . "<br><br>";
-            echo "</div>";
-
-            $q = "SELECT restriction_id FROM RecipeDietaryRestriction WHERE recipe_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $recipe_id);
-            $st->execute();
-            $st->bind_result($restriction_id);
-
-            $restrictions = array();
-            while ($st->fetch()) {
-                $restrictions[] = array(
-                    "restriction_id" => $restriction_id,
-                );
+            if (!empty($category_name)) {
+                $category_q = "SELECT category_id FROM Category WHERE category_name = ?";
+                $category_st = $cn->stmt_init();
+                $category_st->prepare($category_q);
+                $category_st->bind_param("s", $category_name);
+                $category_st->execute();
+                $category_st->bind_result($category_id);
+                $category_st->fetch();
+                $category_st->close();
+                $q .= " AND category_id = ?";
+                $params .= "i";
+                $param_values[] = $category_id;
             }
-            $st->close();
+            if (!empty($cuisine_name)) {
+                $cuisine_q = "SELECT cuisine_id FROM Cuisine WHERE cuisine_name = ?";
+                $cuisine_st = $cn->stmt_init();
+                $cuisine_st->prepare($cuisine_q);
+                $cuisine_st->bind_param("s", $cuisine_name);
+                $cuisine_st->execute();
+                $cuisine_st->bind_result($cuisine_id);
+                $cuisine_st->fetch();
+                $cuisine_st->close();
+                $q .= " AND cuisine_id = ?";
+                $params .= "i";
+                $param_values[] = $cuisine_id;
+            }
+            if (!empty($min_cost)) {
+                $q .= " AND price >= ?";
+                $params .= "d";
+                $param_values[] = $min_cost;
+            }
+            if (!empty($max_cost)) {
+                $q .= " AND price <= ?";
+                $params .= "d";
+                $param_values[] = $max_cost;
+            }
+            if (!empty($min_prep_time)) {
+                $q .= " AND prep_time >= ?";
+                $params .= "i";
+                $param_values[] = $min_prep_time;
+            }
+            if (!empty($max_prep_time)) {
+                $q .= " AND prep_time <= ?";
+                $params .= "i";
+                $param_values[] = $max_prep_time;
+            }
+            if (!empty($min_rating)) {
+                $q .= " AND rating >= ?";
+                $params .= "d";
+                $param_values[] = $min_rating;
+            }
+            if (!empty($max_rating)) {
+                $q .= " AND rating <= ?";
+                $params .= "d";
+                $param_values[] = $max_rating;
+            }
+            if (!empty($dietary_restrictions_name)) {
+                $restrictions_q = "SELECT restriction_id FROM DietaryRestrictionType WHERE restriction_name = ?";
+                $restrictions_st = $cn->stmt_init();
+                $restrictions_st->prepare($restrictions_q);
+                $restrictions_st->bind_param("s", $dietary_restrictions_name);
+                $restrictions_st->execute();
+                $restrictions_st->bind_result($restriction_id);
+                $restrictions_st->fetch();
+                $restrictions_st->close();
+                $q .= " AND restriction_id = ?";
+                $params .= "i";
+                $param_values[] = $restriction_id;
+            }
 
-            echo "<div class='section-heading'>Dietary Restrictions</div>";
-            echo "<div class='section-content'>";
-            foreach ($restrictions as $restriction) {
-                $restriction_id = $restriction['restriction_id'];
-                $q = "SELECT restriction_name FROM DietaryRestrictionType WHERE restriction_id = ?";
-                $st = $cn->stmt_init();
-                $st->prepare($q);
-                $st->bind_param("i", $restriction_id);
-                $st->execute();
-                $st->bind_result($restriction_name);
+            $q .= " AND 2=2";
 
-                while($st->fetch()) {
-                    echo $restriction_name . "<br>";
+            $st = $cn->stmt_init();
+            $st->prepare($q);
+
+            if (!empty($params)) {
+                $bind_params = array_merge([$params], $param_values);
+                $refs = array();
+                foreach ($bind_params as $key => $value) {
+                    $refs[$key] = &$bind_params[$key];
                 }
-                $st->close();
+                call_user_func_array([$st, 'bind_param'], $refs);
             }
-            echo "</div>";
 
-            $q = "SELECT ingredient_id, quantity, unit_id FROM Recipe_Ingredient WHERE recipe_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $recipe_id);
+            // var_dump($q);
+            // var_dump($category_id);
+
+
             $st->execute();
-            $st->bind_result($ingredient_id, $quantity, $unit_id);
+            $st->bind_result($result_value);
+            $st->fetch();
 
-            $recipe_ingredients = array();
-            while ($st->fetch()) {
-                $recipe_ingredients[] = array(
-                    "ingredient_id" => $ingredient_id,
-                    "quantity" => $quantity,
-                    "unit_id" => $unit_id
-                );
-            }
-            $st->close();
 
-            echo "<div class='section-heading'>Recipe Ingredients</div>";
-            echo "<div class='section-content'>";
-            foreach ($recipe_ingredients as $recipe_ingredient) {
-                $ingredient_id = $recipe_ingredient['ingredient_id'];
-                $quantity = $recipe_ingredient['quantity'];
-                $unit_id = $recipe_ingredient['unit_id'];
-
-                $ingredient_q = "SELECT ingredient_name FROM Ingredient WHERE ingredient_id = ?";
-                $ingredient_st = $cn->stmt_init();
-                $ingredient_st->prepare($ingredient_q);
-                $ingredient_st->bind_param("i", $ingredient_id);
-                $ingredient_st->execute();
-                $ingredient_st->bind_result($ingredient_name);
-                $ingredient_st->fetch();
-                $ingredient_st->close();
-
-                $unit_q = "SELECT unit_name FROM Unit WHERE unit_id = ?";
-                $unit_st = $cn->stmt_init();
-                $unit_st->prepare($unit_q);
-                $unit_st->bind_param("i", $unit_id);
-                $unit_st->execute();
-                $unit_st->bind_result($unit_name);
-                $unit_st->fetch();
-                $unit_st->close();
-
-                if ($quantity == 1 || $unit_name == "Each") {
-                    $suffix = '';
+            if (!is_null($result_value)) {
+                echo "<h2>Result:</h2>";
+            
+                if ($attribute == "price") {
+                    echo "<p><h4>$ {$result_value}</h4></p>";
+                } elseif ($attribute == "prep_time") {
+                    echo "<p><h4>{$result_value} minutes</h4></p>";
+                } elseif ($attribute == "rating") {
+                    echo "<p><h4>{$result_value} / 5</h4></p>";
                 } else {
-                    $suffix = 's';
+                    echo "<p><h4>{$result_value}</h4></p>";
                 }
-
-                echo $ingredient_name . " - " . $quantity . " " . $unit_name . $suffix . "<br>";
             }
-            echo "</div>";
-
-            $q = "SELECT step_number, instruction_text FROM Instructions WHERE recipe_id = ?";
-            $st = $cn->stmt_init();
-            $st->prepare($q);
-            $st->bind_param("i", $recipe_id);
-            $st->execute();
-            $st->bind_result($step_number, $instruction_text);
-
-            echo "<div class='section-heading'>Instructions</div>";
-            echo "<div class='section-content'>";
-            while ($st->fetch()) {
-                echo "<div style='text-align: left;'>Step " . $step_number . ") " . $instruction_text . "</div><br>";
+            else {
+                echo "<h2>No results available, please edit search criteria.</h2>";
             }
-            echo "</div>";
 
-            $cn->close();
+            $st->close();
+            mysqli_close($cn);
         ?>
     </div>
 </body>

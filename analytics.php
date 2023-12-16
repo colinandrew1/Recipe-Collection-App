@@ -67,7 +67,7 @@
             box-sizing: border-box;
         }
     </style>
-    <title>Search Recipes</title>
+    <title>Analytics</title>
 </head>
 <body>
     <div class="add-recipe">
@@ -86,6 +86,14 @@
             <option value="MIN">Minimum</option>
             <option value="MAX">Maximum</option>
             <option value="AVG">Average</option>
+          </select>
+
+          <label for="attribute">Attribute:</label>
+          <select name="attribute" id="attribute" required>
+            <option value=""></option>
+            <option value="price">Price</option>
+            <option value="prep_time">Prep Time</option>
+            <option value="rating">Rating</option>
           </select>
       </div>
 
